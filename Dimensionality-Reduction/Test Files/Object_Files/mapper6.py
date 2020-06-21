@@ -62,20 +62,29 @@ class mapper:
         else:
 
             # temp_map = np.random.randint(0, high=self.output_dimension+1, size = self.output_dimension, dtype=int)
-            temp_map = np.array(range(self.output_dimension))
-            # print("tempmap",temp_map)
-            for i in range(self.input_dimension-1):
-                # print(self.map[i])
-                self.map[i] = temp_map[self.map[i]]
-            # print("map",self.map)
-            self.output_dimension = self.find_compression_length()
-            # print ("outdim",self.output_dimension)
+            # temp_map = np.array(range(self.output_dimension))
+            # # print("tempmap",temp_map)
+            # for i in range(self.input_dimension-1):
+            #     # print(self.map[i])
+            #     self.map[i] = temp_map[self.map[i]]
+            # # print("map",self.map)
+            # self.output_dimension = self.find_compression_length()
+            # # print ("outdim",self.output_dimension)
             if position <= self.input_dimension:
                 # self.input_dimension += 1
                 # self.get_mapping_info()
                 self.bits = np.insert(self.bits, position, (random.randint(0,1)-0.5)*2)
                 alpha = random.randint(0,self.output_dimension-1)
                 self.map = np.insert(self.map, position,alpha,axis=0)
+
+                feature_selected = int(self.input_dimension/self.output_dimension)
+                for i in range(feature_selected):
+                    alpha = random.randint(0,self.input_dimension-1)
+                    # print("alpha_val:",alpha)
+                    self.map[alpha]=self.output_dimension
+                self.output_dimension+=1
+            
+
                 # self.get_mapping_info()
                 # print (self.map)
                 # updated_feature_counter_array = []
@@ -263,14 +272,14 @@ class mapper:
 
 def main():
     # #print (np.random.randint(0,high=1,size=50))
-    demomap = mapper(input_dim=1000,out_dim=3)
+    demomap = mapper(input_dim=100,out_dim=3)
     demomap.get_mapping_info()
-    arr1 = np.random.randint(0, 10, 1000)
+    arr1 = np.random.randint(0, 10, 100)
     print("Original Array:", arr1)
     print("Reduced array:",demomap.dimension_reduction(arr1))
     batch_pos=[]
-    for i in range(110):
-        batch_pos.append(random.randint(0,999))
+    for i in range(11):
+        batch_pos.append(random.randint(0,99))
     demomap.batch_insert_feature(batch_pos)
 
 
