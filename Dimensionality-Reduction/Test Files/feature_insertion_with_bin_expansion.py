@@ -20,7 +20,7 @@ def array_normalization(input_array):
     return result
 
 
-def get_adversarial_positions(demo_operator, batch_feature_size):
+def get_positions(demo_operator, batch_feature_size):
 	feature_counter = demo_operator.get_feature_counter()
 	# print ("Originl feature counter:",feature_counter)
 	batch_positions = []
@@ -83,7 +83,7 @@ def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
                     break
     return data_array
 
-def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits ,default_maps ,array1,array2,mapping_scheme=1,max_value=0):
+def get_feature_insertion_results(Input_dimension ,Output_dimension ,default_bits ,default_maps ,array1,array2,mapping_scheme=1,max_value=0):
 
     batch_error = []
     batch_time = []
@@ -100,7 +100,7 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits
         ct+=1
         # print ("epoch1:::Input Dimenson::",Input_dimension)
         batch_feature_size = int(sample_size)
-        batch_positions = get_adversarial_positions(demo_operator,batch_feature_size)
+        batch_positions = get_positions(demo_operator,batch_feature_size)
         feature1 = np.random.normal(0,1,size=batch_feature_size)
         feature2 = np.random.normal(0,1,size=batch_feature_size)
 
@@ -110,7 +110,7 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits
 
         t1 = time.time()
         array1,array2 = demo_operator.batch_insert_feature(batch_positions,array1,array2, feature1, feature2)
-        # print("batch feature deletion done....")
+        # print("batch feature insertion done....")
         # print("arr1:",array1)
         # print("arr2:",array2)
         inner_product1, inner_product2 = demo_operator.inner_product(array1, array2)
@@ -134,22 +134,21 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
     sample_size = Input_dimension/100
     reduced_input_dim = int(Input_dimension*1.2)
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
-    # demo_operator.mapping.bits = default_bits
-    # demo_operator.mapping.map = default_maps
+    
     batch_inner_product1 = []
     batch_inner_product2 = []
     while Input_dimension <= reduced_input_dim:
         # print ("epoch1:::Input Dimenson::",Input_dimension)
         
         batch_feature_size = int(sample_size)
-        batch_positions = get_adversarial_positions(demo_operator,batch_feature_size)
+        batch_positions = get_positions(demo_operator,batch_feature_size)
         Input_dimension+=batch_feature_size
         feature1 = np.random.normal(0,1,size=batch_feature_size)
         feature2 = np.random.normal(0,1,size=batch_feature_size)
 
         t1 = time.time()
         array1,array2 = demo_operator.batch_insert_feature(batch_positions,array1,array2, feature1, feature2)
-        # print("batch feature deletion done....")
+        # print("batch feature insertion done....")
         # print("arr1:",array1)
         # print("arr2:",array2)
         fresh_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
@@ -222,30 +221,12 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         norm_arr_1 = array_normalization(arr1)
         norm_arr_2 = array_normalization(arr2)
 
-        # norm_arr_1 = arr1
-        # norm_arr_2 = arr2
+        batch_error_a, batch_time_a, batch_inner_product1_a,batch_inner_product2_a,_,_ = get_feature_insertion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
 
-        # print ("* Normalized array (1):",norm_arr_1)
-        # print ("* Normalized array (2):",norm_arr_2)
-
-        batch_error_a, batch_time_a, batch_inner_product1_a,batch_inner_product2_a,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
-
-        # plt.plot(range(len(batch_error)), batch_error, label = "Error Without Compensation")
-        # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 Without Compensation")
-        # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 Without Compensation")
-
-        batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
+        batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_insertion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
 
         batch_error_c, batch_time_c, batch_inner_product1_c,batch_inner_product2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6)
-        # batch_error_c,batch_inner_product1_c,batch_inner_product2_c,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=8,max_value=alpha)
-
-        # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
-
-        # plt.plot(range(len(batch_error)), batch_error, label = "Error With Compensation")
-        # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 With Compensation")
-        # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 With Compensation")
-        # plt.legend()
-        # plt.show()
+        
         if count == 1:
             avg_batch_error_a = batch_error_a
             avg_batch_error_b = batch_error_b
@@ -254,13 +235,6 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
             avg_batch_time_a = batch_time_a
             avg_batch_time_b = batch_time_b
             avg_batch_time_c = batch_time_c
-
-            # avg_inner_product1_a = batch_inner_product1_a
-            # avg_inner_product2_a = batch_inner_product2_a
-            # avg_inner_product1_b = batch_inner_product1_b
-            # avg_inner_product2_b = batch_inner_product2_b
-            # avg_inner_product1_c = batch_inner_product1_c
-            # avg_inner_product2_c = batch_inner_product2_c
 
         else :
             for i in range(len(batch_error_a)):
@@ -271,13 +245,6 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
                 avg_batch_time_a[i] += batch_time_a[i]
                 avg_batch_time_b[i] += batch_time_b[i]
                 avg_batch_time_c[i] += batch_time_c[i]
-
-                # avg_inner_product1_a[i] += batch_inner_product1_a[i]
-                # avg_inner_product2_a[i] += batch_inner_product2_a[i]
-                # avg_inner_product1_b[i] += batch_inner_product1_b[i]
-                # avg_inner_product2_b[i] += batch_inner_product2_b[i]
-                # avg_inner_product1_c[i] += batch_inner_product1_c[i]
-                # avg_inner_product2_c[i] += batch_inner_product2_c[i]
 
         if count%50 == 0 or count == n_pairs-2:
             np.save('Outputs/insertion/sample0000_testing_'+dataset+'_'+str(count)+'.npy', [ (np.array(avg_batch_error_a)/count, np.array(batch_time_a)/count), (np.array(avg_batch_error_b)/count, np.array(batch_time_b)/count), (np.array(avg_batch_error_c)/count, np.array(batch_time_c)/count) ])
@@ -293,38 +260,12 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         avg_batch_time_b[i] /= n_pairs
         avg_batch_time_c[i] /= n_pairs
 
-        # avg_inner_product1_a[i] /= n_pairs
-        # avg_inner_product2_a[i] /= n_pairs
-        # avg_inner_product1_b[i] /= n_pairs
-        # avg_inner_product2_b[i] /= n_pairs
-        # avg_inner_product1_c[i] /= n_pairs
-        # avg_inner_product2_c[i] /= n_pairs
-
     return avg_batch_error_a,  avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c
 
 def main():
     # input_file = sys.argv[1]
     # compensation1, compensation2, compensation3 = 0, 1, 2 # 0 = No Compensaation, 1 = 1 step Compensation, 2 = 2 step
     n_args = len(sys.argv)
-    # if n_args > 2:
-    #     compensation1 = int(sys.argv[2])
-    #     compensation2 = int(sys.argv[3])
-    
-    # m1, m2 = 5, 6 #One without compensation, other with one step compensation
-    # if compensation1 == 0:
-    #     m1 = 5
-    # elif compensation1 == 1:
-    #     m1 = 6
-    # else:
-    #     m1 = 8
-
-    # if compensation2 == 0:
-    #     m2 = 5
-    # elif compensation2 == 1:
-    #     m2 = 6
-    # else:
-    #     m2 = 8
-
     n_pairs = 100
 
     if n_args >1:
@@ -361,10 +302,6 @@ def main():
         print("Dataset:", x)
         avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = get_all_errors(y, n_pairs, 5, 6)
         print ("FINAL RESULTS",avg_batch_error_a,avg_batch_error_b,avg_batch_error_c)
-        # avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = [1,2,4,5,6,8,9,1,4,6], [2,2,4,5,6,8,9,1,4,6], [3,2,4,5,6,8,9,1,4,6], [4,2,4,5,6,8,9,1,4,6], [5,2,4,5,6,8,9,1,4,6], [6,2,4,5,6,8,9,1,4,6]
-    
-    
-
     
         print(avg_batch_error_a)
         print(avg_batch_error_b)
@@ -383,56 +320,12 @@ def main():
         ax[1][it].legend(loc='upper right')
         it+=1
 
-    
-
-
-    # fig.legend()
     fig.tight_layout(pad=0.5)
     fig.set_figheight(8)
     fig.set_figwidth(12)
 
-    
-    #plt.show()
-    # fig.savefig("./fig.png")
     fig.savefig('Plots/sample000_Insertion_1000.png', orientation = 'landscape')
 
-    # return
-
-    # plt.plot(range(len(avg_batch_error_a)), np.array(avg_batch_error_a)**2, label = "NO Compensation")
-    # # plt.plot(range(len(avg_inner_product1_a)), avg_inner_product1_a, label = "IP1 With "+str(compensation1)+" step Compensation")
-    # # plt.plot(range(len(avg_inner_product2_a)), avg_inner_product2_a, label = "IP2 With "+str(compensation1)+" step Compensation")
-
-    # plt.plot(range(len(avg_batch_error_b)), np.array(avg_batch_error_b)**2, label = "One Step Compensation")
-    # # plt.plot(range(len(avg_inner_product1_b)), avg_inner_product1_b, label = "IP1 With "+str(compensation2)+" step Compensation")
-    # # plt.plot(range(len(avg_inner_product2_b)), avg_inner_product2_b, label = "IP2 With "+str(compensation2)+" step Compensation")
-
-    # plt.plot(range(len(avg_batch_error_c)), np.array(avg_batch_error_c)**2, label = "Remap")
-    # # plt.plot(range(len(avg_inner_product1_c)), avg_inner_product1_c, label = "IP1 With "+str(compensation3)+" step Compensation")
-    # # plt.plot(range(len(avg_inner_product2_c)), avg_inner_product2_c, label = "IP2 With "+str(compensation3)+" step Compensation")
-    # plt.xlabel("% of features deleted")
-    # plt.ylabel("MSE")
-    # plt.legend()
-
-    # #plt.show()
-    # plt.savefig('/home/b16032/MTP/Dimensionality-Reduction/Test Files/Plots/All_Datasets_28-2-2020.png')
-
-
-
-    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=3,max_value=alpha)
-
-    # plt.plot(range(len(batch_error)), batch_error, label = "Error Without Compensation")
-    # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 Without Compensation")
-    # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 Without Compensation")
-
-    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=4,max_value=alpha)
-
-    # # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
-
-    # plt.plot(range(len(batch_error)), batch_error, label = "Error With Compensation")
-    # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 With Compensation")
-    # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 With Compensation")
-    # plt.legend()
-    # plt.show()
-
+    
 if __name__ == '__main__':
 	main()
