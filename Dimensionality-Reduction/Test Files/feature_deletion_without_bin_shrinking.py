@@ -4,8 +4,8 @@ from Object_Files.mapper5 import mapper
 from Object_Files.basic_operator import operator
 #import matplotlib.pyplot as plt
 import sys
-# import matplotlib
-# matplotlib.use('agg')
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import random
 import time
@@ -42,7 +42,7 @@ def get_adversarial_positions(demo_operator, batch_feature_size):
 	# print ("batch positions to be deleted:",batch_positions)
 	return batch_positions
 
-def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
+def load_data(file="/home/b16032/MTP/Dimensionality-Reduction/Test Files/Data/docword.enron.txt",number_of_objects = 100):
     data_array = []
 
     f_path = abspath(file)
@@ -88,28 +88,20 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits
     batch_error = []
     batch_time = []
     sample_size = Input_dimension/100
-    increased_input_dim = int(Input_dimension*2)
+    reduced_input_dim = Input_dimension//2
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
-    ct = 0
-    # demo_operator.mapping.bits = default_bits
-    # demo_operator.mapping.map = default_maps
+    demo_operator.mapping.bits = default_bits
+    demo_operator.mapping.map = default_maps
     batch_inner_product1 = []
     batch_inner_product2 = []
-    while Input_dimension <= increased_input_dim:
-        print("\t", ct)
-        ct+=1
+    while Input_dimension >= reduced_input_dim:
         # print ("epoch1:::Input Dimenson::",Input_dimension)
         batch_feature_size = int(sample_size)
         batch_positions = get_adversarial_positions(demo_operator,batch_feature_size)
-        feature1 = np.random.normal(0,1,size=batch_feature_size)
-        feature2 = np.random.normal(0,1,size=batch_feature_size)
-
-
-
-        Input_dimension+=batch_feature_size
+        Input_dimension-=batch_feature_size
 
         t1 = time.time()
-        array1,array2 = demo_operator.batch_insert_feature(batch_positions,array1,array2, feature1, feature2)
+        array1,array2 = demo_operator.batch_delete_feature(batch_positions,array1,array2)
         # print("batch feature deletion done....")
         # print("arr1:",array1)
         # print("arr2:",array2)
@@ -132,23 +124,21 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
     batch_error = []
     batch_time = []
     sample_size = Input_dimension/100
-    reduced_input_dim = int(Input_dimension*2)
+    reduced_input_dim = Input_dimension//2
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     # demo_operator.mapping.bits = default_bits
     # demo_operator.mapping.map = default_maps
     batch_inner_product1 = []
     batch_inner_product2 = []
-    while Input_dimension <= reduced_input_dim:
+    while Input_dimension >= reduced_input_dim:
         # print ("epoch1:::Input Dimenson::",Input_dimension)
         
         batch_feature_size = int(sample_size)
         batch_positions = get_adversarial_positions(demo_operator,batch_feature_size)
-        Input_dimension+=batch_feature_size
-        feature1 = np.random.normal(0,1,size=batch_feature_size)
-        feature2 = np.random.normal(0,1,size=batch_feature_size)
+        Input_dimension-=batch_feature_size
 
         t1 = time.time()
-        array1,array2 = demo_operator.batch_insert_feature(batch_positions,array1,array2, feature1, feature2)
+        array1,array2 = demo_operator.batch_delete_feature(batch_positions,array1,array2)
         # print("batch feature deletion done....")
         # print("arr1:",array1)
         # print("arr2:",array2)
@@ -159,7 +149,7 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
         # print ("inners products:",inner_product1,inner_product2)
         # print("error:", error)
         batch_error.append(error)
-        batch_time.append((t2-t1)*2)
+        batch_time.append(t2-t1)
         batch_inner_product1.append(inner_product1)
         batch_inner_product2.append(inner_product2)
         # print ("Mapping scheme :",mapping_scheme,"::")
@@ -195,7 +185,6 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
     avg_batch_time_b = []
     avg_batch_time_c = []
     data_array = load_data(input_file,n_pairs)
-    print(data_array)
     N = data_array[0].size
     M = 2000
 
@@ -236,7 +225,7 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
 
         batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
 
-        batch_error_c, batch_time_c, batch_inner_product1_c,batch_inner_product2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6)
+        batch_error_c, batch_time_c, batch_inner_product1_c,batch_inner_product2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5)
         # batch_error_c,batch_inner_product1_c,batch_inner_product2_c,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=8,max_value=alpha)
 
         # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
@@ -278,11 +267,10 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
                 # avg_inner_product2_b[i] += batch_inner_product2_b[i]
                 # avg_inner_product1_c[i] += batch_inner_product1_c[i]
                 # avg_inner_product2_c[i] += batch_inner_product2_c[i]
-
-        if count%50 == 0 or count == n_pairs-2:
-            np.save('Outputs/insertion/sample0000_testing_'+dataset+'_'+str(count)+'.npy', [ (np.array(avg_batch_error_a)/count, np.array(batch_time_a)/count), (np.array(avg_batch_error_b)/count, np.array(batch_time_b)/count), (np.array(avg_batch_error_c)/count, np.array(batch_time_c)/count) ])
-
         count += 1
+
+        if count%100 == 0 or count == n_pairs-2:
+            np.save('Outputs/sample0001_real_'+dataset+'_'+str(count)+'_'+'.npy', [ np.array(avg_batch_error_a)/count, np.array(avg_batch_error_b)/count, np.array(avg_batch_error_c)/count ])
 
     for i in range(len(avg_batch_error_a)):
         avg_batch_error_a[i] /= n_pairs
@@ -331,9 +319,9 @@ def main():
         n_pairs = int(sys.argv[1])
 
     files = {
-        "NYtimes" :  "Data/docword.nytimes.txt", #"./Data/docword.enron.txt", #
-        "KOS" : "Data/docword.kos.txt", #"./Data/docword.kos.txt", #
-        "NIPS" : "Data/docword.nips.txt" #"./Data/docword.nips.txt", #
+        "NYtimes" : "Data/docword.nytimes.txt",
+        "KOS" : "Data/docword.kos.txt",
+        "NIPS" : "Data/docword.nips.txt"
     }
 
     fig, ax = plt.subplots(2, 3)
@@ -347,39 +335,33 @@ def main():
     ax[1][2].set_title('NIPS')
     
 
-    ax[0][0].set(xlabel='% of features inserted', ylabel='MSE')
-    ax[0][1].set(xlabel='% of features inserted', ylabel='MSE')
-    ax[0][2].set(xlabel='% of features inserted', ylabel='MSE')
+    ax[0][0].set(xlabel='% of features deleted', ylabel='MSE')
+    ax[0][1].set(xlabel='% of features deleted', ylabel='MSE')
+    ax[0][2].set(xlabel='% of features deleted', ylabel='MSE')
 
-    ax[1][0].set(xlabel='% of features inserted', ylabel='Time(s)')
-    ax[1][1].set(xlabel='% of features inserted', ylabel='Time(s)')
-    ax[1][2].set(xlabel='% of features inserted', ylabel='Time(s)')
+    ax[1][0].set(xlabel='% of features deleted', ylabel='Time(s)')
+    ax[1][1].set(xlabel='% of features deleted', ylabel='Time(s)')
+    ax[1][2].set(xlabel='% of features deleted', ylabel='Time(s)')
 
     #loop
     it = 0
     for x, y in files.items():
-        print("Dataset:", x)
         avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = get_all_errors(y, n_pairs, 5, 6)
-        print ("FINAL RESULTS",avg_batch_error_a,avg_batch_error_b,avg_batch_error_c)
+
         # avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = [1,2,4,5,6,8,9,1,4,6], [2,2,4,5,6,8,9,1,4,6], [3,2,4,5,6,8,9,1,4,6], [4,2,4,5,6,8,9,1,4,6], [5,2,4,5,6,8,9,1,4,6], [6,2,4,5,6,8,9,1,4,6]
     
     
 
     
-        print(avg_batch_error_a)
-        print(avg_batch_error_b)
-        print(avg_batch_error_c)
-        ax[0][it].plot(range(0,len(avg_batch_error_a)*10, 10), np.array(avg_batch_error_a)**2, label="No Compensation", linestyle='--')
-        ax[0][it].plot(range(0,len(avg_batch_error_b)*10, 10), np.array(avg_batch_error_b)**2, label="Our Method", linewidth=3)
-        ax[0][it].plot(range(0,len(avg_batch_error_c)*10, 10), np.array(avg_batch_error_c)**2, label="Remap")
+
+        ax[0][it].plot(range(len(avg_batch_error_a)), np.array(avg_batch_error_a)**2, label="No Compensation", linestyle='--')
+        ax[0][it].plot(range(len(avg_batch_error_b)), np.array(avg_batch_error_b)**2, label="Our Method", linewidth=3)
+        ax[0][it].plot(range(len(avg_batch_error_c)), np.array(avg_batch_error_c)**2, label="Remap")
         ax[0][it].legend(loc='upper right')
 
-        print(avg_batch_time_a)
-        print(avg_batch_time_b)
-        print(avg_batch_time_c)
-        ax[1][it].plot(range(0, len(avg_batch_time_a)*10, 10), avg_batch_time_a, label="No Compensation", linestyle='--')
-        ax[1][it].plot(range(0, len(avg_batch_time_b)*10, 10), avg_batch_time_b, label="Our Method", linewidth=3)
-        ax[1][it].plot(range(0, len(avg_batch_time_c)*10, 10), avg_batch_time_c, label="Remap")
+        ax[1][it].plot(range(len(avg_batch_time_a)), avg_batch_time_a, label="No Compensation", linestyle='--')
+        ax[1][it].plot(range(len(avg_batch_time_b)), avg_batch_time_b, label="Our Method", linewidth=3)
+        ax[1][it].plot(range(len(avg_batch_time_c)), avg_batch_time_c, label="Remap")
         ax[1][it].legend(loc='upper right')
         it+=1
 
@@ -388,13 +370,12 @@ def main():
 
     # fig.legend()
     fig.tight_layout(pad=0.5)
-    fig.set_figheight(8)
-    fig.set_figwidth(12)
+    fig.set_figheight(10)
+    fig.set_figwidth(15)
 
     
     #plt.show()
-    # fig.savefig("./fig.png")
-    fig.savefig('Plots/sample000_Insertion_1000.png', orientation = 'landscape')
+    fig.savefig('Plots/sample_0001_All_Datasets_1000_'+'.png', orientation = 'landscape')
 
     # return
 
