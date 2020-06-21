@@ -65,13 +65,13 @@ def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
                     count = int(words[2])
                     # print(num)
                     if num == last_num:
-                        feature_array[position-1] = count
+                        feature_array[position-1] = 1
                     else:
                         data_array.append(feature_array)
                         counter += 1
                         feature_array = np.zeros(features,dtype=int)
                         last_num = num
-                        feature_array[position-1] = count
+                        feature_array[position-1] = 1
 
                     if counter > number_of_objects :
                         break
@@ -83,12 +83,12 @@ def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
                     break
     return data_array
 
-def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits ,default_maps ,array1,array2,mapping_scheme=1,max_value=0):
+def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_maps ,array1,array2,mapping_scheme=1,max_value=0):
 
     batch_error = []
     batch_time = []
     sample_size = Input_dimension/100
-    increased_input_dim = int(Input_dimension*2)
+    increased_input_dim = int(Input_dimension*1.2)
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     ct = 0
     # demo_operator.mapping.bits = default_bits
@@ -132,7 +132,7 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
     batch_error = []
     batch_time = []
     sample_size = Input_dimension/100
-    reduced_input_dim = int(Input_dimension*2)
+    reduced_input_dim = int(Input_dimension*1.2)
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     # demo_operator.mapping.bits = default_bits
     # demo_operator.mapping.map = default_maps
@@ -204,7 +204,7 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
     while count < n_pairs-1:
         
         mapping = mapper(N,M)
-        bits = mapping.bits
+        # bits = mapping.bits
         maps = mapping.map
 
         print(count)
@@ -219,8 +219,8 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         # print ("* Selected array (1) from Dataset:",arr1)
         # print ("* Selected array (2) from Dataset:",arr2)
 
-        norm_arr_1 = array_normalization(arr1)
-        norm_arr_2 = array_normalization(arr2)
+        norm_arr_1 = arr1 #array_normalization(arr1)
+        norm_arr_2 = arr2 #array_normalization(arr2)
 
         # norm_arr_1 = arr1
         # norm_arr_2 = arr2
@@ -228,15 +228,15 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         # print ("* Normalized array (1):",norm_arr_1)
         # print ("* Normalized array (2):",norm_arr_2)
 
-        batch_error_a, batch_time_a, batch_inner_product1_a,batch_inner_product2_a,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
+        batch_error_a, batch_time_a, batch_inner_product1_a,batch_inner_product2_a,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
 
         # plt.plot(range(len(batch_error)), batch_error, label = "Error Without Compensation")
         # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 Without Compensation")
         # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 Without Compensation")
 
-        batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
+        batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
 
-        batch_error_c, batch_time_c, batch_inner_product1_c,batch_inner_product2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6)
+        batch_error_c, batch_time_c, batch_inner_product1_c,batch_inner_product2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5)
         # batch_error_c,batch_inner_product1_c,batch_inner_product2_c,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=8,max_value=alpha)
 
         # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
@@ -360,23 +360,23 @@ def main():
     for x, y in files.items():
         print("Dataset:", x)
         avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = get_all_errors(y, n_pairs, 5, 6)
-        print ("FINAL RESULTS",avg_batch_error_a,avg_batch_error_b,avg_batch_error_c)
+        print (x, "FINAL RESULTS",avg_batch_error_a,avg_batch_error_b,avg_batch_error_c)
         # avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = [1,2,4,5,6,8,9,1,4,6], [2,2,4,5,6,8,9,1,4,6], [3,2,4,5,6,8,9,1,4,6], [4,2,4,5,6,8,9,1,4,6], [5,2,4,5,6,8,9,1,4,6], [6,2,4,5,6,8,9,1,4,6]
     
     
 
     
-        print(avg_batch_error_a)
-        print(avg_batch_error_b)
-        print(avg_batch_error_c)
+        # print(avg_batch_error_a)
+        # print(avg_batch_error_b)
+        # print(avg_batch_error_c)
         ax[0][it].plot(range(0,len(avg_batch_error_a)*10, 10), np.array(avg_batch_error_a)**2, label="No Compensation", linestyle='--')
         ax[0][it].plot(range(0,len(avg_batch_error_b)*10, 10), np.array(avg_batch_error_b)**2, label="Our Method", linewidth=3)
         ax[0][it].plot(range(0,len(avg_batch_error_c)*10, 10), np.array(avg_batch_error_c)**2, label="Remap")
         ax[0][it].legend(loc='upper right')
 
-        print(avg_batch_time_a)
-        print(avg_batch_time_b)
-        print(avg_batch_time_c)
+        # print(avg_batch_time_a)
+        # print(avg_batch_time_b)
+        # print(avg_batch_time_c)
         ax[1][it].plot(range(0, len(avg_batch_time_a)*10, 10), avg_batch_time_a, label="No Compensation", linestyle='--')
         ax[1][it].plot(range(0, len(avg_batch_time_b)*10, 10), avg_batch_time_b, label="Our Method", linewidth=3)
         ax[1][it].plot(range(0, len(avg_batch_time_c)*10, 10), avg_batch_time_c, label="Remap")

@@ -54,16 +54,13 @@ def load_data(file="/home/b16032/MTP/Dimensionality-Reduction/Test Files/Data/do
             last_num = 1
             feature_array = np.zeros(features,dtype=int)
             counter = 0
-            # print("Count:",count)
             while True:
-                
                 line = f.readline() 
                 if line:
                     words = line.split()
                     num = int(words[0])
                     position = int(words[1])
                     count = int(words[2])
-                    # print(num)
                     if num == last_num:
                         feature_array[position-1] = 1
                     else:
@@ -81,7 +78,12 @@ def load_data(file="/home/b16032/MTP/Dimensionality-Reduction/Test Files/Data/do
 						
                 else:
                     break
+
+
+    # for i in range(105):
+    #     data_array.append(np.random.randint(2,size=10000))
     return data_array
+
 
 def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_maps ,array1,array2,mapping_scheme=1,max_value=0):
 
@@ -92,8 +94,8 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_maps
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     # demo_operator.mapping.bits = default_bits
     demo_operator.mapping.map = default_maps
-    batch_inner_product1 = []
-    batch_inner_product2 = []
+    batch_jaccard_similarity1 = []
+    batch_jaccard_similarity2 = []
     while Input_dimension >= reduced_input_dim:
         # print ("epoch1:::Input Dimenson::",Input_dimension)
         batch_feature_size = int(sample_size)
@@ -105,20 +107,20 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_maps
         # print("batch feature deletion done....")
         # print("arr1:",array1)
         # print("arr2:",array2)
-        inner_product1, inner_product2 = demo_operator.inner_product(array1, array2)
+        jaccard_similarity1, jaccard_similarity2 = demo_operator.jaccard_similarity(array1, array2)
         t2 = time.time()
-        error = abs(inner_product1-inner_product2)
-        # print ("inners products:",inner_product1,inner_product2)
+        error = abs(jaccard_similarity1-jaccard_similarity2)
+        # print ("inners products:",jaccard_similarity1,jaccard_similarity2)
         # print("error:", error)
         batch_error.append(error)
-        batch_inner_product1.append(inner_product1)
-        batch_inner_product2.append(inner_product2)
+        batch_jaccard_similarity1.append(jaccard_similarity1)
+        batch_jaccard_similarity2.append(jaccard_similarity2)
         batch_time.append(t2-t1)
         # print ("Mapping scheme :",mapping_scheme,"::")
         # print (demo_operator.get_feature_count())
 		
 
-    return batch_error, batch_time, batch_inner_product1,batch_inner_product2,array1,array2
+    return batch_error, batch_time, batch_jaccard_similarity1,batch_jaccard_similarity2,array1,array2
 
 def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping_scheme):
     batch_error = []
@@ -128,8 +130,8 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     # demo_operator.mapping.bits = default_bits
     # demo_operator.mapping.map = default_maps
-    batch_inner_product1 = []
-    batch_inner_product2 = []
+    batch_jaccard_similarity1 = []
+    batch_jaccard_similarity2 = []
     while Input_dimension >= reduced_input_dim:
         # print ("epoch1:::Input Dimenson::",Input_dimension)
         
@@ -143,37 +145,37 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
         # print("arr1:",array1)
         # print("arr2:",array2)
         fresh_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
-        inner_product1, inner_product2 = fresh_operator.inner_product(array1, array2)
+        jaccard_similarity1, jaccard_similarity2 = fresh_operator.jaccard_similarity(array1, array2)
         t2 = time.time()
-        error = abs(inner_product1-inner_product2)
-        # print ("inners products:",inner_product1,inner_product2)
+        error = abs(jaccard_similarity1-jaccard_similarity2)
+        # print ("inners products:",jaccard_similarity1,jaccard_similarity2)
         # print("error:", error)
         batch_error.append(error)
         batch_time.append(t2-t1)
-        batch_inner_product1.append(inner_product1)
-        batch_inner_product2.append(inner_product2)
+        batch_jaccard_similarity1.append(jaccard_similarity1)
+        batch_jaccard_similarity2.append(jaccard_similarity2)
         # print ("Mapping scheme :",mapping_scheme,"::")
         # print (demo_operator.get_feature_count())
         
 
-    return batch_error, batch_time, batch_inner_product1,batch_inner_product2,array1,array2
+    return batch_error, batch_time, batch_jaccard_similarity1,batch_jaccard_similarity2,array1,array2
 
-def get_inner_product_results(array1, array2, input_dimension, output_dimension):
+def get_jaccard_similarity_results(array1, array2, input_dimension, output_dimension):
 	i = 10
-	avg_inner_product1, avg_inner_product2 = 0, 0
+	avg_jaccard_similarity1, avg_jaccard_similarity2 = 0, 0
 	while i > 0:
 		demo_operator = operator(input_dim=input_dimension, output_dim=output_dimension, mapping_scheme = 3)
-		inner_product1, inner_product2 = demo_operator.inner_product(array1, array2)
+		jaccard_similarity1, jaccard_similarity2 = demo_operator.jaccard_similarity(array1, array2)
 
-		avg_inner_product1+=inner_product1
-		avg_inner_product2+=inner_product2
+		avg_jaccard_similarity1+=jaccard_similarity1
+		avg_jaccard_similarity2+=jaccard_similarity2
 
 		i-=1
 	
-	avg_inner_product1/=10
-	avg_inner_product2/=10
+	avg_jaccard_similarity1/=10
+	avg_jaccard_similarity2/=10
 
-	return avg_inner_product1, avg_inner_product2
+	return avg_jaccard_similarity1, avg_jaccard_similarity2
 		
 def get_all_errors(input_file, n_pairs, compensation1, compensation2):
     count = 1
@@ -193,7 +195,6 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
     while count < n_pairs-1:
         
         mapping = mapper(N,M)
-        # bits = mapping.bits
         maps = mapping.map
 
         print(count)
@@ -208,8 +209,8 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         # print ("* Selected array (1) from Dataset:",arr1)
         # print ("* Selected array (2) from Dataset:",arr2)
 
-        norm_arr_1 = arr1 #array_normalization(arr1)
-        norm_arr_2 = arr2 #array_normalization(arr2)
+        norm_arr_1 = arr1
+        norm_arr_2 = arr2
 
         # norm_arr_1 = arr1
         # norm_arr_2 = arr2
@@ -217,22 +218,22 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         # print ("* Normalized array (1):",norm_arr_1)
         # print ("* Normalized array (2):",norm_arr_2)
 
-        batch_error_a, batch_time_a, batch_inner_product1_a,batch_inner_product2_a,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M, default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
+        batch_error_a, batch_time_a, batch_jaccard_similarity1_a,batch_jaccard_similarity2_a,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M, default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
 
         # plt.plot(range(len(batch_error)), batch_error, label = "Error Without Compensation")
-        # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 Without Compensation")
-        # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 Without Compensation")
+        # plt.plot(range(len(batch_jaccard_similarity1)), batch_jaccard_similarity1, label = "IP1 Without Compensation")
+        # plt.plot(range(len(batch_jaccard_similarity2)), batch_jaccard_similarity2, label = "IP2 Without Compensation")
 
-        batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M, default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
+        batch_error_b, batch_time_b,batch_jaccard_similarity1_b,batch_jaccard_similarity2_b,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M, default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=9,max_value=alpha)
 
-        batch_error_c, batch_time_c, batch_inner_product1_c,batch_inner_product2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5)
-        # batch_error_c,batch_inner_product1_c,batch_inner_product2_c,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=8,max_value=alpha)
+        batch_error_c, batch_time_c, batch_jaccard_similarity1_c,batch_jaccard_similarity2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5)
+        # batch_error_c,batch_jaccard_similarity1_c,batch_jaccard_similarity2_c,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=8,max_value=alpha)
 
-        # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
+        # print(batch_error,batch_jaccard_similarity1,batch_jaccard_similarity2,array1,array2)
 
         # plt.plot(range(len(batch_error)), batch_error, label = "Error With Compensation")
-        # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 With Compensation")
-        # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 With Compensation")
+        # plt.plot(range(len(batch_jaccard_similarity1)), batch_jaccard_similarity1, label = "IP1 With Compensation")
+        # plt.plot(range(len(batch_jaccard_similarity2)), batch_jaccard_similarity2, label = "IP2 With Compensation")
         # plt.legend()
         # plt.show()
         if count == 1:
@@ -244,12 +245,12 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
             avg_batch_time_b = batch_time_b
             avg_batch_time_c = batch_time_c
 
-            # avg_inner_product1_a = batch_inner_product1_a
-            # avg_inner_product2_a = batch_inner_product2_a
-            # avg_inner_product1_b = batch_inner_product1_b
-            # avg_inner_product2_b = batch_inner_product2_b
-            # avg_inner_product1_c = batch_inner_product1_c
-            # avg_inner_product2_c = batch_inner_product2_c
+            # avg_jaccard_similarity1_a = batch_jaccard_similarity1_a
+            # avg_jaccard_similarity2_a = batch_jaccard_similarity2_a
+            # avg_jaccard_similarity1_b = batch_jaccard_similarity1_b
+            # avg_jaccard_similarity2_b = batch_jaccard_similarity2_b
+            # avg_jaccard_similarity1_c = batch_jaccard_similarity1_c
+            # avg_jaccard_similarity2_c = batch_jaccard_similarity2_c
 
         else :
             for i in range(len(batch_error_a)):
@@ -261,16 +262,16 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
                 avg_batch_time_b[i] += batch_time_b[i]
                 avg_batch_time_c[i] += batch_time_c[i]
 
-                # avg_inner_product1_a[i] += batch_inner_product1_a[i]
-                # avg_inner_product2_a[i] += batch_inner_product2_a[i]
-                # avg_inner_product1_b[i] += batch_inner_product1_b[i]
-                # avg_inner_product2_b[i] += batch_inner_product2_b[i]
-                # avg_inner_product1_c[i] += batch_inner_product1_c[i]
-                # avg_inner_product2_c[i] += batch_inner_product2_c[i]
+                # avg_jaccard_similarity1_a[i] += batch_jaccard_similarity1_a[i]
+                # avg_jaccard_similarity2_a[i] += batch_jaccard_similarity2_a[i]
+                # avg_jaccard_similarity1_b[i] += batch_jaccard_similarity1_b[i]
+                # avg_jaccard_similarity2_b[i] += batch_jaccard_similarity2_b[i]
+                # avg_jaccard_similarity1_c[i] += batch_jaccard_similarity1_c[i]
+                # avg_jaccard_similarity2_c[i] += batch_jaccard_similarity2_c[i]
         count += 1
 
         if count%100 == 0 or count == n_pairs-2:
-            np.save('Outputs/sample0001_real_'+dataset+'_'+str(count)+'_'+'.npy', [ np.array(avg_batch_error_a)/count, np.array(avg_batch_error_b)/count, np.array(avg_batch_error_c)/count ])
+            np.save('Outputs/sample00010_real_'+dataset+'_'+str(count)+'_'+'.npy', [ np.array(avg_batch_error_a)/count, np.array(avg_batch_error_b)/count, np.array(avg_batch_error_c)/count ])
 
     for i in range(len(avg_batch_error_a)):
         avg_batch_error_a[i] /= n_pairs
@@ -281,12 +282,12 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         avg_batch_time_b[i] /= n_pairs
         avg_batch_time_c[i] /= n_pairs
 
-        # avg_inner_product1_a[i] /= n_pairs
-        # avg_inner_product2_a[i] /= n_pairs
-        # avg_inner_product1_b[i] /= n_pairs
-        # avg_inner_product2_b[i] /= n_pairs
-        # avg_inner_product1_c[i] /= n_pairs
-        # avg_inner_product2_c[i] /= n_pairs
+        # avg_jaccard_similarity1_a[i] /= n_pairs
+        # avg_jaccard_similarity2_a[i] /= n_pairs
+        # avg_jaccard_similarity1_b[i] /= n_pairs
+        # avg_jaccard_similarity2_b[i] /= n_pairs
+        # avg_jaccard_similarity1_c[i] /= n_pairs
+        # avg_jaccard_similarity2_c[i] /= n_pairs
 
     return avg_batch_error_a,  avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c
 
@@ -348,6 +349,9 @@ def main():
     for x, y in files.items():
         avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = get_all_errors(y, n_pairs, 5, 6)
 
+
+        print(x, ":", avg_batch_error_a, avg_batch_error_b, avg_batch_error_c)
+
         # avg_batch_error_a, avg_batch_error_b, avg_batch_error_c, avg_batch_time_a, avg_batch_time_b, avg_batch_time_c = [1,2,4,5,6,8,9,1,4,6], [2,2,4,5,6,8,9,1,4,6], [3,2,4,5,6,8,9,1,4,6], [4,2,4,5,6,8,9,1,4,6], [5,2,4,5,6,8,9,1,4,6], [6,2,4,5,6,8,9,1,4,6]
     
     
@@ -375,21 +379,21 @@ def main():
 
     
     #plt.show()
-    fig.savefig('Plots/sample_0001_All_Datasets_1000_'+'.png', orientation = 'landscape')
+    fig.savefig('Plots/sample_00010_All_Datasets_1000_'+'.png', orientation = 'landscape')
 
     # return
 
     # plt.plot(range(len(avg_batch_error_a)), np.array(avg_batch_error_a)**2, label = "NO Compensation")
-    # # plt.plot(range(len(avg_inner_product1_a)), avg_inner_product1_a, label = "IP1 With "+str(compensation1)+" step Compensation")
-    # # plt.plot(range(len(avg_inner_product2_a)), avg_inner_product2_a, label = "IP2 With "+str(compensation1)+" step Compensation")
+    # # plt.plot(range(len(avg_jaccard_similarity1_a)), avg_jaccard_similarity1_a, label = "IP1 With "+str(compensation1)+" step Compensation")
+    # # plt.plot(range(len(avg_jaccard_similarity2_a)), avg_jaccard_similarity2_a, label = "IP2 With "+str(compensation1)+" step Compensation")
 
     # plt.plot(range(len(avg_batch_error_b)), np.array(avg_batch_error_b)**2, label = "One Step Compensation")
-    # # plt.plot(range(len(avg_inner_product1_b)), avg_inner_product1_b, label = "IP1 With "+str(compensation2)+" step Compensation")
-    # # plt.plot(range(len(avg_inner_product2_b)), avg_inner_product2_b, label = "IP2 With "+str(compensation2)+" step Compensation")
+    # # plt.plot(range(len(avg_jaccard_similarity1_b)), avg_jaccard_similarity1_b, label = "IP1 With "+str(compensation2)+" step Compensation")
+    # # plt.plot(range(len(avg_jaccard_similarity2_b)), avg_jaccard_similarity2_b, label = "IP2 With "+str(compensation2)+" step Compensation")
 
     # plt.plot(range(len(avg_batch_error_c)), np.array(avg_batch_error_c)**2, label = "Remap")
-    # # plt.plot(range(len(avg_inner_product1_c)), avg_inner_product1_c, label = "IP1 With "+str(compensation3)+" step Compensation")
-    # # plt.plot(range(len(avg_inner_product2_c)), avg_inner_product2_c, label = "IP2 With "+str(compensation3)+" step Compensation")
+    # # plt.plot(range(len(avg_jaccard_similarity1_c)), avg_jaccard_similarity1_c, label = "IP1 With "+str(compensation3)+" step Compensation")
+    # # plt.plot(range(len(avg_jaccard_similarity2_c)), avg_jaccard_similarity2_c, label = "IP2 With "+str(compensation3)+" step Compensation")
     # plt.xlabel("% of features deleted")
     # plt.ylabel("MSE")
     # plt.legend()
@@ -399,19 +403,19 @@ def main():
 
 
 
-    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=3,max_value=alpha)
+    # batch_error,batch_jaccard_similarity1,batch_jaccard_similarity2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=3,max_value=alpha)
 
     # plt.plot(range(len(batch_error)), batch_error, label = "Error Without Compensation")
-    # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 Without Compensation")
-    # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 Without Compensation")
+    # plt.plot(range(len(batch_jaccard_similarity1)), batch_jaccard_similarity1, label = "IP1 Without Compensation")
+    # plt.plot(range(len(batch_jaccard_similarity2)), batch_jaccard_similarity2, label = "IP2 Without Compensation")
 
-    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=4,max_value=alpha)
+    # batch_error,batch_jaccard_similarity1,batch_jaccard_similarity2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=4,max_value=alpha)
 
-    # # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
+    # # print(batch_error,batch_jaccard_similarity1,batch_jaccard_similarity2,array1,array2)
 
     # plt.plot(range(len(batch_error)), batch_error, label = "Error With Compensation")
-    # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 With Compensation")
-    # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 With Compensation")
+    # plt.plot(range(len(batch_jaccard_similarity1)), batch_jaccard_similarity1, label = "IP1 With Compensation")
+    # plt.plot(range(len(batch_jaccard_similarity2)), batch_jaccard_similarity2, label = "IP2 With Compensation")
     # plt.legend()
     # plt.show()
 

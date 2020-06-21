@@ -26,7 +26,7 @@ class mapper:
         #print("Initializing...\n", "Bits:", self.bits, "\nMap:", self.map)
 
     def find_compression_length(self):
-        return int(0.1*self.input_dimension)+10
+        return int(0.001*self.input_dimension)+800
 
     def insert_feature(self, position=0):
         # print ("Inserting new feature at the ",position,"of data.")

@@ -27,7 +27,7 @@ class mapper:
        
 
     def find_compression_length(self):
-        return int(0.1*self.input_dimension)+10
+        return int(0.001*self.input_dimension)+1000
 
     def insert_feature(self, position=0):
         self.input_dimension+=1
