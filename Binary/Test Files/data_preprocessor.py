@@ -186,7 +186,6 @@ def main():
 			avg_inner_product1_b = batch_inner_product1_b
 			avg_inner_product2_b = batch_inner_product2_b
 
-<<<<<<< HEAD
 		else :
 			for i in range(len(batch_error_a)):
 				avg_batch_error_a[i] += batch_error_a[i]
@@ -212,46 +211,6 @@ def main():
 	plt.plot(range(len(avg_batch_error_b)), avg_batch_error_b, label = "Error With Compensation")
 	plt.plot(range(len(avg_inner_product1_b)), avg_inner_product1_b, label = "IP1 With Compensation")
 	plt.plot(range(len(avg_inner_product2_b)), avg_inner_product2_b, label = "IP2 With Compensation")
-=======
-	data_array = load_data()
-	i=10
-	inner_products1, inner_products2 = [], []
-	errors = []
-	while i > 0:
-		N = data_array[0].size
-		M = 50*(11-i)
-		print ("* Input Dimension of Dataset:",N)
-		print ("* Output (compressed) Dimension of Dataset:",M)
-		alpha = 1
-
-		arr1 = data_array[0]
-		arr2 = data_array[1]
-
-		print ("* Selected array (1) from Dataset:",arr1)
-		print ("* Selected array (2) from Dataset:",arr2)
-
-		# norm_arr_1 = array_normalization(arr1)
-		# norm_arr_2 = array_normalization(arr2)
-
-		norm_arr_1 = arr1
-		norm_arr_2 = arr2
-
-		print ("* Normalized array (1):",norm_arr_1)
-		print ("* Normalized array (2):",norm_arr_2)
-
-		ip1, ip2 = get_inner_product_results(norm_arr_1, norm_arr_2, N, M)
-
-		inner_products1.append(ip1)
-		inner_products2.append(ip2)
-
-		errors.append(abs(ip1-ip2))
-
-		i-=1
-
-	plt.plot(range(10), inner_products1, label="Inner Product 1")
-	plt.plot(range(10), inner_products2, label = "Inner Product 2")
-	plt.plot(range(10), errors, label = "Errors")
->>>>>>> c1baf7dafdaf57e4983d7eb7c9d456fad83b174b
 	plt.legend()
 
 	plt.show()
