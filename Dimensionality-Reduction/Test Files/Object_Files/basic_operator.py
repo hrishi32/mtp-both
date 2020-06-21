@@ -7,7 +7,7 @@ from Object_Files.mapper5 import mapper as mapper5
 from Object_Files.mapper6 import mapper as mapper6
 from Object_Files.mapper7 import mapper as mapper7
 from Object_Files.mapper8 import mapper as mapper8
-from Object_Files.mapper8 import mapper as mapper9
+from Object_Files.mapper9 import mapper as mapper9
 
 # import random
 

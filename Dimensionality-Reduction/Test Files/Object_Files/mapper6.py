@@ -3,7 +3,7 @@ import random
 # With Compensation -> 1 step
 class mapper:
     def __init__(self, input_dim = 50, out_dim = 15):
-        print ("You ae using mapper 6.")
+        print ("You are using mapper 6.")
         self.input_dimension = input_dim
         self.output_dimension = self.find_compression_length()
         self.bits = np.random.randint(-1, high= 1, size= input_dim)
@@ -33,7 +33,7 @@ class mapper:
        
 
     def find_compression_length(self):
-        return int(0.001*self.input_dimension)+100
+        return int(0.001*self.input_dimension)+200
 
     def insert_feature(self, position=0):
         self.input_dimension+=1

@@ -88,7 +88,7 @@ def get_feature_insertion_results(Input_dimension ,Output_dimension ,default_bit
     batch_error = []
     batch_time = []
     sample_size = Input_dimension/100
-    increased_input_dim = int(Input_dimension*1.2)
+    increased_input_dim = int(Input_dimension*2)
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     ct = 0
     # demo_operator.mapping.bits = default_bits
@@ -132,7 +132,7 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
     batch_error = []
     batch_time = []
     sample_size = Input_dimension/100
-    reduced_input_dim = int(Input_dimension*1.2)
+    reduced_input_dim = int(Input_dimension*2)
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     
     batch_inner_product1 = []
