@@ -335,7 +335,7 @@ class mapper:
             feature_count.append(temp)
             temp = []
         
-        for i in range(self.input_dimension):
+        for i in range(self.input_dimension-1):
             feature_count[self.map[i]].append(i)
 
         # print (feature_count)
