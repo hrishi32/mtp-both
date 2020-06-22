@@ -87,7 +87,7 @@ def inner_product(arr1, arr2):
 
     c = abs(numerator/denominator)
 
-    return mod_a + mod_b - (numerator/denominator)
+    return mod_a + mod_b - c
 
 """
     *
