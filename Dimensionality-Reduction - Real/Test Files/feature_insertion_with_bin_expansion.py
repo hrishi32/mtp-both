@@ -108,7 +108,7 @@ def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
             last_num = 1
             feature_array = np.zeros(features,dtype=int)
             counter = 0
-            # print("Count:",count)
+           
             while True:
                 
                 line = f.readline() 
@@ -117,7 +117,7 @@ def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
                     num = int(words[0])
                     position = int(words[1])
                     count = int(words[2])
-                    # print(num)
+                    
                     if num == last_num:
                         feature_array[position-1] = count
                     else:
@@ -129,10 +129,7 @@ def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
 
                     if counter > number_of_objects :
                         break
-
-
-
-						
+		
                 else:
                     break
     return data_array
@@ -395,9 +392,9 @@ def main():
         n_pairs = int(sys.argv[1])
 
     files = {
-        "NYtimes" :  "Data/docword.nytimes.txt", #"./Data/docword.enron.txt", #
-        "KOS" : "Data/docword.kos.txt", #"./Data/docword.kos.txt", #
-        "NIPS" : "Data/docword.nips.txt" #"./Data/docword.nips.txt", #
+        "NYtimes" :  "Data/docword.nytimes.txt", 
+        "KOS" : "Data/docword.kos.txt", 
+        "NIPS" : "Data/docword.nips.txt"  
     }
 
     fig, ax = plt.subplots(2, 3)

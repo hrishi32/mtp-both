@@ -62,7 +62,7 @@ class mapper:
     """
 
     def find_compression_length(self):
-        return int(0.001*self.input_dimension)+800
+        return int(0.001*self.input_dimension)+1500
 
     """
         *

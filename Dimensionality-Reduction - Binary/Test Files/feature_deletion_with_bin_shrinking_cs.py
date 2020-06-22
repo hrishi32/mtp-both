@@ -150,7 +150,7 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_maps
     reduced_input_dim = Input_dimension//2
     demo_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
     
-    demo_operator.mapping.map = default_maps
+    # demo_operator.mapping.map = default_maps
     batch_cosine_similarity1 = []
     batch_cosine_similarity2 = []
     while Input_dimension >= reduced_input_dim:
