@@ -1,7 +1,38 @@
 import numpy as np
 import random
 
+
+"""
+    * class mapper
+    *
+    * Summary of mapper class:
+    *
+    *   This class stores the mapping between input vector and output vector.
+    *   Implemented methods support feature insertion, deletion and other functionalities.
+    *
+    * Description:
+    *
+    *   This class creates a mapping between input vector and output vector when initiated.
+    *   Given the input array, it will be able to return a output array.
+    *
+"""
 class mapper:
+
+    """
+        * Summary of init function:
+        *  
+        *   It is only used while creating a new object. According to given parameters, the random
+        *   mapping from input dimension 'd' to output dimension 'k' is created.
+        *
+        * Parameters    : input_dim: integer
+        *                 out_dim: integer
+        *
+        * Description :
+        *
+        *   It creates a mapping array from input dimension to output dimension along with bits string.
+        *   The output dimension is given as a parameter, however we compute it using method 'find_compression_length'.
+        *   
+    """
     def __init__(self, input_dim = 50, out_dim = 15):
         print("You are in Mapper 3!")
         self.input_dimension = input_dim
@@ -30,6 +61,23 @@ class mapper:
 
         #print("Initializing...\n", "Bits:", self.bits, "\nMap:", self.map)
 
+    """
+        *
+        * function insert_feature(position=0)
+        *
+        * Summary: 
+        *
+        *   Inserts a mapping for newly inserted feature in map array at given
+        *   position. 
+        *   Note: As this mapper is only for deletion, it does not implement bin
+        *   expansion here.
+        *
+        * Parameters     : position:Integer
+        *
+        * Return Value  : Nothing -- Note: It changes map array internally.
+        *
+    """
+
     def insert_feature(self, position=0):
         # print ("Inserting new feature at the ",position,"of data.")
         if position <= self.input_dimension:
@@ -51,6 +99,26 @@ class mapper:
         # print("Bits:", self.bits)
         # print("Map:", self.map)
         # print("feature_counter :",self.feature_counter)
+
+    """
+        *
+        * function delete_feature(position=0)
+        *
+        * Summary: 
+        *
+        *   Deletes a mapping for deleted feature in map array at given
+        *   position. The deletion scheme is 'No Compensation'
+        *   
+        * Parameters     : position:Integer
+        *
+        * Return Value  : Nothing -- Note: It changes map array internally.
+        *
+        * Description:
+        *
+        *   After execution of this function, input dimension will be reduced
+        *   by 1, output dimension will remain same.
+        *
+    """
 
     def delete_feature(self, position=0):
         # print ("Pos:",position)
@@ -82,6 +150,28 @@ class mapper:
         # print("Map:", self.map)
         # print("feature_counter :",self.feature_counter)
 
+    """
+        *
+        * function batch_insert_feature(batch_positions=[])
+        *
+        * Summary: 
+        *
+        *   Inserts a mapping for newly inserted features in map array at given
+        *   position. Here, features are inserted in batch.
+        *   Note: As this mapper is only for deletion, it does not implement bin
+        *   expansion here.
+        *
+        * Parameters     : batch_positions: List of integers
+        *
+        * Return Value  : Nothing -- Note: It changes map array internally.
+        *
+        * Description:
+        *
+        *   When feature insertion in input vector is happened in batch, this method
+        *   should be invoked. 
+        *
+    """
+
     def batch_insert_feature(self,batch_positions=[]):
         flags = np.zeros(self.input_dimension)
         for i in range(len(batch_positions)):
@@ -111,6 +201,26 @@ class mapper:
             
             i+=1
         # print ("end")
+
+    """
+        *
+        * function batch_delete_feature(batch_positions=[])
+        *
+        * Summary: 
+        *
+        *   Deletes a mapping for deleted feature in map array at given
+        *   positions. The deletion scheme is 'No Compensation'
+        *   
+        * Parameters     : batch_positions:List of integers
+        *
+        * Return Value  : Nothing -- Note: It changes map array internally.
+        *
+        * Description:
+        *
+        *   After execution of this function, input dimension will be reduced
+        *   by number of batch positions, output dimension will remain same.
+        *
+    """
 
     def batch_delete_feature(self,batch_positions=[]):
         flags = np.zeros(self.input_dimension)
@@ -146,6 +256,24 @@ class mapper:
         # for i in range(len(batch_positions)):
         #     self.delete_feature(position=batch_positions[i])
 
+    """
+        *
+        * function dimension_reduction(input_array)
+        *
+        * Summary: 
+        *
+        *   Given the input array, the function computes the associated output array
+        *   
+        * Parameters     : input_array: List of real numbers
+        *
+        * Return Value  : output_array: List of real numbers
+        *
+        * Description:
+        *
+        *   This method is useful to get the output array form associated mapping.
+        *
+    """
+
     def dimension_reduction(self, input_array):
         # output_array = np.zeros(self.output_dimension, dtype=float)
 
@@ -160,11 +288,58 @@ class mapper:
 
         # return output_array
 
+    """
+        *
+        * function input_dim()
+        *
+        * Summary: 
+        *
+        *   Method to get input dimension
+        *   
+        * Parameters     : None
+        *
+        * Return Value  : self.input_dim: Integer
+        *
+    """
+
     def input_dim(self):
         return self.input_dim
 
+    """
+        *
+        * function output_dim()
+        *
+        * Summary: 
+        *
+        *   Method to get output dimension
+        *   
+        * Parameters     : None
+        *
+        * Return Value  : self.output_dim: Integer
+        *
+    """
+
     def output_dim(self):
         return self.output_dim
+
+    """
+        *
+        * function get_feature_count()
+        *
+        * Summary: 
+        *
+        *   Calculates number of features mapped in each bin of output vector.
+        *   
+        * Parameters     : None
+        *
+        * Return Value  : feature_counter: List of integers
+        *
+        * Description:
+        *
+        *   Each number in the returned list indicates the number of features mapped at
+        *   that position.
+        *
+    """
 
     def get_feature_count(self):
         arr = self.get_feature_counter()
@@ -176,6 +351,25 @@ class mapper:
         return feature_counter
 
         # return self.feature_counter
+
+    """
+        *
+        * function get_feature_counter()
+        *
+        * Summary: 
+        *
+        *   Collects list of features mapped in each bin of output vector.
+        *   
+        * Parameters     : None
+        *
+        * Return Value  : feature_counter: List of list of integers
+        *
+        * Description:
+        *
+        *   Each list in the returned list indicates the positions of input vector
+        *   that are mapped in output vector.
+        *
+    """
 
     def get_feature_counter(self):
         feature_count = []
@@ -195,6 +389,24 @@ class mapper:
 
         # print (feature_count)
         return feature_count
+
+    """
+        *
+        * function get_mapping_info()
+        *
+        * Summary: 
+        *
+        *   A function to print mapping information.
+        *   
+        * Parameters     : None
+        *
+        * Return Value  : Nothing -- Note: Prints associated mapping information on console.
+        *
+        * Description:
+        *
+        *   This method is useful for debugging purposes.
+        *
+    """
 
     def get_mapping_info(self):
         print ("Input Features:",self.input_dimension)
