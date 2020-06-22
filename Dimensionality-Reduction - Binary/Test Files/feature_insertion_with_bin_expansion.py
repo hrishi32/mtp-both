@@ -241,6 +241,34 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
 
 """
     *
+    * function cumulate(arr)
+    *
+    * Summary: 
+    *
+    *   Given the array, it returns cumulative array of that.
+    *   
+    * Parameters     : arr: Array of real numbers 
+    *                                                     
+    *
+    * Return Value  : temp_arr: Array of real numbers (cumulated)
+    *
+    *           -- Note: It also saves the numpy array of errors and time.
+    *
+    * Description:
+    *
+    *   Used in time taken array where we consider time before all deletions
+    *
+"""
+def cumulate(arr):
+    # temp_arr = np.zeros(len(arr))
+
+    for i in range(1, len(arr)):
+        arr[i] = arr[i-1]+arr[i]
+
+    return arr
+
+"""
+    *
     * function get_all_errors(input_file, n_pairs)
     *
     * Summary: 
@@ -406,9 +434,9 @@ def main():
         ax[0][it].plot(range(0,len(avg_batch_error_c)*10, 10), np.array(avg_batch_error_c)**2, label="Remap")
         ax[0][it].legend(loc='upper right')
 
-        ax[1][it].plot(range(0, len(avg_batch_time_a)*10, 10), avg_batch_time_a, label="No Compensation", linestyle='--')
-        ax[1][it].plot(range(0, len(avg_batch_time_b)*10, 10), avg_batch_time_b, label="Our Method", linewidth=3)
-        ax[1][it].plot(range(0, len(avg_batch_time_c)*10, 10), avg_batch_time_c, label="Remap")
+        ax[1][it].plot(range(0, len(avg_batch_time_a)*10, 10), cumulate(avg_batch_time_a), label="No Compensation", linestyle='--')
+        ax[1][it].plot(range(0, len(avg_batch_time_b)*10, 10), cumulate(avg_batch_time_b), label="Our Method", linewidth=3)
+        ax[1][it].plot(range(0, len(avg_batch_time_c)*10, 10), cumulate(avg_batch_time_c), label="Remap")
         ax[1][it].legend(loc='upper right')
         it+=1
 
