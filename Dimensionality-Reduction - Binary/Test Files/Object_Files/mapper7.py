@@ -17,7 +17,7 @@ import random
     *
 """
 class mapper:
-     """
+    """
         * Summary of init function:
         *  
         *   It is only used while creating a new object. According to given parameters, the random

@@ -98,7 +98,7 @@ def get_adversarial_positions(demo_operator, batch_feature_size):
     *   When given file is not found, it returns nothing.
     *
 """
-def load_data(file="/home/b16032/MTP/Dimensionality-Reduction/Test Files/Data/docword.enron.txt",number_of_objects = 100):
+def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
     data_array = []
 
     f_path = abspath(file)
