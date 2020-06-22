@@ -10,6 +10,24 @@ import matplotlib.pyplot as plt
 import random
 import time
 
+"""
+    *
+    * function array_normalization(input_array)
+    *
+    * Summary: 
+    *
+    *   Given thr input array, this function returns a normalized array
+    *   
+    * Parameters     : input_array: Array of real numbers
+    *
+    * Return Value  : result: Array of real numbers
+    *
+    * Description:
+    *
+    *   We use this function to maintain the norm of array equal to 1.
+    *
+"""
+
 def array_normalization(input_array):
     array_norm = np.linalg.norm(input_array)
     # print ("array norm:",array_norm)
@@ -20,7 +38,27 @@ def array_normalization(input_array):
     return result
 
 
-def get_adversarial_positions(demo_operator, batch_feature_size):
+"""
+    *
+    * function get_positions(demo_operator, batch_feature_size)
+    *
+    * Summary: 
+    *
+    *   For feature insertion, this function gives positions where
+    *   features are going to be inserted.
+    *   
+    * Parameters     : demo_operator: Operator object
+    *                  batch_feature_size: Integer                  
+    *
+    * Return Value  : batch_positions: Array of integers
+    *
+    * Description:
+    *
+    *   The function is useful while inserting the features at
+    *   random positions.
+    *
+"""
+def get_positions(demo_operator, batch_feature_size):
 	feature_counter = demo_operator.get_feature_counter()
 	# print ("Originl feature counter:",feature_counter)
 	batch_positions = []
@@ -42,6 +80,27 @@ def get_adversarial_positions(demo_operator, batch_feature_size):
 	# print ("batch positions to be deleted:",batch_positions)
 	return batch_positions
 
+"""
+    *
+    * function load_data(file, number_of_objects)
+    *
+    * Summary: 
+    *
+    *   It reads the data from provied input file. We can give the
+    *   limit to number of objects in the data ith second parameter.
+    *   
+    * Parameters     : file: String
+    *                  number_of_objects: Integer                  
+    *
+    * Return Value  : data_array: Array of objects (data points)
+    *
+    * Description:
+    *
+    *   The file string contains absolute or relative path to the file.
+    *   Number of objects are provided in order to limit the data size.
+    *   When given file is not found, it returns nothing.
+    *
+"""
 def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
     data_array = []
 
@@ -83,7 +142,38 @@ def load_data(file="Data/docword.enron.txt",number_of_objects = 100):
                     break
     return data_array
 
-def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits ,default_maps ,array1,array2,mapping_scheme=1,max_value=0):
+"""
+    *
+    * function get_feature_insertion_results(Input_dimension, Output_dimension, default_bits, default_maps, array1, array2,mapping_scheme, max_value)
+    *
+    * Summary: 
+    *
+    *   This function inserts the features and returns error and other values.
+    *   Input arrays are taken as a parameter.
+    *   
+    * Parameters     : Input_dimension: Integer
+    *                  Output_dimension: Integer
+    *                  default_bits: Array of bool
+    *                  default_maps: Array of integers
+    *                  array1: Array of real numbers 
+    *                  array2: Array of real numbers
+    *                  mapping_scheme: Integer -- Note: Type of mapping used                                    
+    *
+    * Return Value  : batch_error: Array of real numbers (Error in original and predicted inner product)
+    *                 batch_time: Array of real numbers (Time taken)
+    *                 batch_inner_product1: Array of real numbers (Values of inner product of input arrays)
+    *                 batch_inner_product2: Array of real numbers (Values of predicted inner product)
+    *                 array1: Array of real numbers (Compressed array of array1)
+    *                 array2: Array of real numbers (Compressed array of array2)
+    *
+    * Description:
+    *
+    *   This function inserts the numbers to given input array. Insertion with bin expansion is used.
+    *   It then computes the affected output array and their inner products. 
+    *   It finally returns all the results mentioned in return value section.
+    *
+"""
+def get_feature_insertion_results(Input_dimension ,Output_dimension ,default_bits ,default_maps ,array1,array2,mapping_scheme=1,max_value=0):
 
     batch_error = []
     batch_time = []
@@ -100,7 +190,7 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits
         ct+=1
         # print ("epoch1:::Input Dimenson::",Input_dimension)
         batch_feature_size = int(sample_size)
-        batch_positions = get_adversarial_positions(demo_operator,batch_feature_size)
+        batch_positions = get_positions(demo_operator,batch_feature_size)
         feature1 = np.random.normal(0,1,size=batch_feature_size)
         feature2 = np.random.normal(0,1,size=batch_feature_size)
 
@@ -110,7 +200,7 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits
 
         t1 = time.time()
         array1,array2 = demo_operator.batch_insert_feature(batch_positions,array1,array2, feature1, feature2)
-        # print("batch feature deletion done....")
+        # print("batch feature insertion done....")
         # print("arr1:",array1)
         # print("arr2:",array2)
         inner_product1, inner_product2 = demo_operator.inner_product(array1, array2)
@@ -128,6 +218,34 @@ def get_feature_deletion_results(Input_dimension ,Output_dimension ,default_bits
 
     return batch_error, batch_time, batch_inner_product1,batch_inner_product2,array1,array2
 
+"""
+    *
+    * function get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping_scheme)
+    *
+    * Summary: 
+    *
+    *   This function inserts the features and returns error and other values.
+    *   Input arrays are taken as a parameter.
+    *   
+    * Parameters     : Input_dimension: Integer
+    *                  Output_dimension: Integer
+    *                  array1: Array of real numbers 
+    *                  array2: Array of real numbers
+    *                  mapping_scheme: Integer -- Note: Type of mapping used                                    
+    *
+    * Return Value  : batch_error: Array of real numbers (Error in original and predicted inner product)
+    *                 batch_time: Array of real numbers (Time taken)
+    *                 batch_inner_product1: Array of real numbers (Values of inner product of input arrays)
+    *                 batch_inner_product2: Array of real numbers (Values of predicted inner product)
+    *                 array1: Array of real numbers (Compressed array of array1)
+    *                 array2: Array of real numbers (Compressed array of array2)
+    *
+    * Description:
+    *
+    *   This function works similar to the above function. After insertion of features in
+    *   input arrays, it creates fresh mapping for modified array (by creating new operator object).
+    *
+"""
 def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping_scheme):
     batch_error = []
     batch_time = []
@@ -139,17 +257,17 @@ def get_remap_results(Input_dimension, Output_dimension, array1, array2, mapping
     batch_inner_product1 = []
     batch_inner_product2 = []
     while Input_dimension <= reduced_input_dim:
-        # print ("epoch1:::Input Dimenson::",Input_dimension)
+        # print ("epoch1:::Input Dimension::",Input_dimension)
         
         batch_feature_size = int(sample_size)
-        batch_positions = get_adversarial_positions(demo_operator,batch_feature_size)
+        batch_positions = get_positions(demo_operator,batch_feature_size)
         Input_dimension+=batch_feature_size
         feature1 = np.random.normal(0,1,size=batch_feature_size)
         feature2 = np.random.normal(0,1,size=batch_feature_size)
 
         t1 = time.time()
         array1,array2 = demo_operator.batch_insert_feature(batch_positions,array1,array2, feature1, feature2)
-        # print("batch feature deletion done....")
+        # print("batch feature insertion done....")
         # print("arr1:",array1)
         # print("arr2:",array2)
         fresh_operator = operator(input_dim=Input_dimension, output_dim=Output_dimension, mapping_scheme=mapping_scheme)
@@ -184,7 +302,32 @@ def get_inner_product_results(array1, array2, input_dimension, output_dimension)
 	avg_inner_product2/=10
 
 	return avg_inner_product1, avg_inner_product2
-		
+
+"""
+    *
+    * function get_all_errors(input_file, n_pairs)
+    *
+    * Summary: 
+    *
+    *   This function collects all the errors and time taken for given dataset 
+    *   file name (path), and returns average of them.
+    *   
+    * Parameters     : input_file: String
+    *                  n_pairs: Integer                                    
+    *
+    * Return Value  : avg_batch_error_a: Array of real numbers (Average error of no compensation)
+    *                 avg_batch_error_b: Array of real numbers (Average error of our method)
+    *                 avg_batch_error_c: Array of real numbers (Average error of total remap)
+    *                 avg_batch_time_a: Array of real numbers (Average time taken for no compensation)
+    *                 avg_batch_time_b: Array of real numbers (Average time taken for our method)
+    *                 avg_batch_time_c: Array of real numbers (Average time taken for total remap)
+    *
+    * Description:
+    *
+    *   This function works similar to the above function. After insertion of features in
+    *   input arrays, it creates fresh mapping for modified array (by creating new operator object).
+    *
+"""		
 def get_all_errors(input_file, n_pairs, compensation1, compensation2):
     count = 1
     avg_batch_error_a = []
@@ -228,16 +371,16 @@ def get_all_errors(input_file, n_pairs, compensation1, compensation2):
         # print ("* Normalized array (1):",norm_arr_1)
         # print ("* Normalized array (2):",norm_arr_2)
 
-        batch_error_a, batch_time_a, batch_inner_product1_a,batch_inner_product2_a,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
+        batch_error_a, batch_time_a, batch_inner_product1_a,batch_inner_product2_a,_,_ = get_feature_insertion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=5,max_value=alpha)
 
         # plt.plot(range(len(batch_error)), batch_error, label = "Error Without Compensation")
         # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 Without Compensation")
         # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 Without Compensation")
 
-        batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
+        batch_error_b, batch_time_b,batch_inner_product1_b,batch_inner_product2_b,_,_ = get_feature_insertion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6,max_value=alpha)
 
         batch_error_c, batch_time_c, batch_inner_product1_c,batch_inner_product2_c,_,_ = get_remap_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=6)
-        # batch_error_c,batch_inner_product1_c,batch_inner_product2_c,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=8,max_value=alpha)
+        # batch_error_c,batch_inner_product1_c,batch_inner_product2_c,_,_ = get_feature_insertion_results(Input_dimension = N,Output_dimension = M,default_bits=bits,default_maps=maps,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=8,max_value=alpha)
 
         # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
 
@@ -418,13 +561,13 @@ def main():
 
 
 
-    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=3,max_value=alpha)
+    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_insertion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=3,max_value=alpha)
 
     # plt.plot(range(len(batch_error)), batch_error, label = "Error Without Compensation")
     # plt.plot(range(len(batch_inner_product1)), batch_inner_product1, label = "IP1 Without Compensation")
     # plt.plot(range(len(batch_inner_product2)), batch_inner_product2, label = "IP2 Without Compensation")
 
-    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_deletion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=4,max_value=alpha)
+    # batch_error,batch_inner_product1,batch_inner_product2,_,_ = get_feature_insertion_results(Input_dimension = N,Output_dimension = M,array1=norm_arr_1,array2=norm_arr_2,mapping_scheme=4,max_value=alpha)
 
     # # print(batch_error,batch_inner_product1,batch_inner_product2,array1,array2)
 
