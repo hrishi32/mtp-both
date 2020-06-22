@@ -30,7 +30,7 @@ class mapper:
         * Description :
         *
         *   It creates a mapping array from input dimension to output dimension along with bits string.
-        *   The output dimension is given as a parameter, however we compute it using method 'find_compression_length'.
+        *   The output dimension is given as a parameter.
         *   
     """
     def __init__(self, input_dim = 50, out_dim = 15):
@@ -53,8 +53,7 @@ class mapper:
         *
         *   Inserts a mapping for newly inserted feature in map array at given
         *   position. 
-        *   Note: As this mapper is only for deletion, it does not implement bin
-        *   expansion here.
+        *   Insertion scheme used in "No compensation".
         *
         * Parameters     : position:Integer
         *
@@ -114,8 +113,6 @@ class mapper:
         *
         *   Inserts a mapping for newly inserted features in map array at given
         *   position. Here, features are inserted in batch.
-        *   Note: As this mapper is only for deletion, it does not implement bin
-        *   expansion here.
         *
         * Parameters     : batch_positions: List of integers
         *
