@@ -89,8 +89,7 @@ class mapper:
         *
         *   Inserts a mapping for newly inserted feature in map array at given
         *   position. 
-        *   Note: As this mapper is only for deletion, it does not implement bin
-        *   expansion here.
+        *   Insertion scheme used is "Bin expansion"
         *
         * Parameters     : position:Integer
         *
@@ -173,7 +172,7 @@ class mapper:
         * Summary: 
         *
         *   Deletes a mapping for deleted feature in map array at given
-        *   position. The deletion scheme is 'No Compensation'
+        *   position. The deletion scheme is '1 step Compensation'
         *   
         * Parameters     : position:Integer
         *
@@ -230,8 +229,6 @@ class mapper:
         *
         *   Inserts a mapping for newly inserted features in map array at given
         *   position. Here, features are inserted in batch.
-        *   Note: As this mapper is only for deletion, it does not implement bin
-        *   expansion here.
         *
         * Parameters     : batch_positions: List of integers
         *
@@ -283,7 +280,7 @@ class mapper:
         * Summary: 
         *
         *   Deletes a mapping for deleted feature in map array at given
-        *   positions. The deletion scheme is 'No Compensation'
+        *   positions. The deletion scheme is '1 step Compensation'
         *   
         * Parameters     : batch_positions:List of integers
         *

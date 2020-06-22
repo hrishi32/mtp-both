@@ -8,7 +8,8 @@ from Object_Files.mapper6 import mapper as mapper6
 from Object_Files.mapper7 import mapper as mapper7
 from Object_Files.mapper8 import mapper as mapper8
 from Object_Files.mapper9 import mapper as mapper9
-
+"""
+"""
 # from mapper import mapper
 # import numpy as np
 # from mapper2 import mapper as mapper2
@@ -37,7 +38,20 @@ def count_ones(arr):
             result+=1
     
     return result
-
+"""
+    *
+    * function inner_product(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its inner product.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Predicted value of Inner product.
+    *
+"""
 def inner_product(arr1, arr2):
     reduced_ones1, reduced_ones2 = count_ones(arr1), count_ones(arr2)
 
@@ -73,7 +87,22 @@ def inner_product(arr1, arr2):
 
     c = abs(numerator/denominator)
 
-    return mod_a + mod_b - (numerator/denominator)
+    return mod_a + mod_b - c
+
+"""
+    *
+    * function hamming_distance(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its hamming distance.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Predicted value of hamming distance.
+    *
+"""
 
 def hamming_distance(arr1, arr2):
     mod_a = count_ones(arr1)
@@ -82,20 +111,59 @@ def hamming_distance(arr1, arr2):
     ip = inner_product(arr1, arr2)
 
     return mod_a + mod_b - (2*ip)
-
+"""
+    *
+    * function jaccard_similarity(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its Jaccard similarity.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Predicted value of jaccard similarity.
+    *
+"""
 def jaccard_similarity(arr1, arr2):
     ip = inner_product(arr1, arr2)
     hd = hamming_distance(arr1, arr2)
 
     return ip/(hd+ip)
-
+"""
+    *
+    * function cosine_similarity(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its cosine_similarity.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Predicted value of cosine_similarity.
+    *
+"""
 def cosine_similarity(arr1, arr2):
     mod_a = count_ones(arr1)
     mod_b = count_ones(arr2)
     ip = inner_product(arr1, arr2)
 
     return ip/((mod_a*mod_b)**0.5)
-
+"""
+    *
+    * function inner_product(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its inner product.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Value of Inner product.
+    *
+"""
 def original_inner_product(arr1, arr2):
     result = 0
 
@@ -103,7 +171,20 @@ def original_inner_product(arr1, arr2):
         result+=(arr1[i]*arr2[i])
 
     return result
-
+"""
+    *
+    * function original_hamming_distance(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its hamming distance.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Value of Hamming distance.
+    *
+"""
 def original_hamming_distance(arr1, arr2):
     result = 0
 
@@ -111,7 +192,20 @@ def original_hamming_distance(arr1, arr2):
         result+=(arr1[i]-arr2[i])
 
     return result
-
+"""
+    *
+    * function original_jaccard_similarity(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its jaccard similarity.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Value of jaccard similarity.
+    *
+"""
 def original_jaccard_similarity(arr1, arr2):
     numerator = inner_product(arr1, arr2)
 
@@ -123,7 +217,20 @@ def original_jaccard_similarity(arr1, arr2):
         return -1
 
     return numerator/demoninator
-
+"""
+    *
+    * function original_cosine_similarity(arr1,arr2)
+    *
+    * Summary: 
+    *
+    *   Given the 2 arrays, computes its cosine_similarity.
+    *   
+    * Parameters     : arr1 : Array
+    *                  arr2 : Array
+    *
+    * Return Value  : Value of cosine_similarity.
+    *
+"""
 def original_cosine_similarity(arr1, arr2):
     numerator = inner_product(arr1, arr2)
 
@@ -144,7 +251,38 @@ def mean_squared_error(original, predicted):
     return result
 
 
+"""
+    * class operator
+    *
+    * Summary of operator class:
+    *
+    *   This class provides functions to operate on two arrays via a associated mapping..
+    *   Implemented methods support feature insertion, deletion and other functionalities.
+    *
+    * Description:
+    *
+    *   This class use a specific mapping to operate on arrays or data for different dimensionality reduction operations.
+    *   Given the input array, it will be able to return a output array.
+    *
+"""
 class operator:
+    """
+        * Summary of init function:
+        *  
+        *   It is only used while creating a new object. According to given parameters for mapping scheme, the
+        *   particular mapping is assigned to its self variable "self.mapping"
+        *
+        * Parameters    : input_dim: integer
+        *                 out_dim: integer
+        *                 mapping_scheme: integer
+        *
+        * Description :
+        *
+        *   It creates a mapping array from input dimension to output dimension along with bits string.
+        *   The output dimension is given as a parameter, however each mapping is responsible for choosing.
+        *   its own output_dim.
+        *   
+    """
     def __init__(self, input_dim=50, output_dim = 15,mapping_scheme=1):
         if mapping_scheme == 1:
             self.mapping = mapper(input_dim=input_dim, out_dim=output_dim)
@@ -165,18 +303,84 @@ class operator:
         elif mapping_scheme == 9:
             self.mapping = mapper9(input_dim=input_dim, out_dim=output_dim)  
 
-
+    """
+        *
+        * function insert_feature(position=0, array1 = [], array2 = [], value1 = 0, value2 = 0)
+        *
+        * Summary: 
+        *
+        *   Changes a mapping for newly inserted feature in map array at given
+        *   position. The insertion scheme depends on the mapping associated
+        *   Inserts a value in the recquired position in the data arrays passed as the argument.
+        *   
+        *
+        * Parameters     : position:Integer
+        *                  array1: Array
+        *                  array2: Array
+        *                  value1: Real
+        *                  value2: Real
+        *
+        * Return Value  : Data arrays 1 and 2 after feature insertion of value1 and value2 at the given position.
+        *
+    """
     def insert_feature(self, position=0, array1 = [], array2 = [], value1 = 0, value2 = 0):
         self.mapping.insert_feature(position=position)
         array1 = np.insert(array1, position, value1)
         array2 = np.insert(array2, position, value2)
         return array1,array2
 
+    """
+        *
+        * function delete_feature(position=0, array1 = [], array2 = [])
+        *
+        * Summary: 
+        *
+        *   Deletes a mapping for deleted feature in map array at given
+        *   position. The deletion scheme depends on the mapping associated.
+        *   Deletes a value in the required position in the data arrays passed as the argument.
+        *   
+        * Parameters     : position:Integer
+        *                  array1: Array
+        *                  array2: Array
+        *
+        * Return Value  :  Data arrays 1 and 2 after feature deletion at the given position. 
+        *
+        * Description:
+        *
+        *   After execution of this function, input dimension will be reduced
+        *   by 1, output dimension will remain same.
+        *
+    """
     def delete_feature(self, position=0, array1 = [], array2 = []):
         self.mapping.delete_feature(position=position)
         array1 = np.delete(array1, position)
         array2 = np.delete(array2, position)
         return array1, array2
+
+    """
+        *
+        * function batch_insert_feature(batch_positions=[],array1=[],array2=[],batch_value1=[],batch_value2=[])
+        *
+        * Summary: 
+        *
+        *   Inserts a mapping for newly inserted features in map array at given
+        *   position. Here, multiple features are inserted at once.
+        *   Inserts the values as a batch in data arrays at the required batch positions.
+        *
+        * Parameters     : batch_positions: List of integers
+        *                  array1 : Array
+        *                  array2 : Array
+        *                  batch_value1 : list of Real numbers
+        *                  batch_value2 : list of Real numbers
+        *
+        * Return Value  : Data arrays 1 and 2 after feature insertion at given positions.
+        *
+        * Description:
+        *
+        *   When feature insertion in input vector is happened in batch, this method
+        *   should be invoked. 
+        *
+    """
 
     def batch_insert_feature(self,batch_positions=[],array1=[],array2=[],batch_value1=[],batch_value2=[]):
         
@@ -233,6 +437,29 @@ class operator:
         
         return array1,array2
 
+
+    """
+        *
+        * function batch_delete_feature(batch_positions=[],array1=[],array2=[])
+        *
+        * Summary: 
+        *
+        *   Deletes a mapping for deleted feature in map array at given
+        *   positions. Here multiples features are deleted at once.
+        *   Deletes the features as a batch in data arrays at the required batch positions.
+        *   
+        * Parameters     : batch_positions:List of integers
+        *                  array1: Array
+        *                  array2: Array
+        *
+        * Return Value  : Data arrays 1 and 2 after feature deletion.
+        *
+        * Description:
+        *
+        *   After execution of this function, input dimension will be reduced
+        *   by number of batch positions, output dimension will depend on the mapping scheme.
+        *
+    """
     def batch_delete_feature(self,batch_positions=[],array1=[],array2=[]):
 
         flags = np.zeros(self.mapping.input_dimension)
@@ -271,6 +498,24 @@ class operator:
         
         return array1,array2
 
+    """
+        *
+        * function array_normalization(input_array)
+        *
+        * Summary: 
+        *
+        *   Given the input array, the function computes the normalized array.
+        *   
+        * Parameters     : input_array: List of real numbers
+        *
+        * Return Value  : output_array: List of real numbers
+        *
+        * Description:
+        *
+        *   This method is useful to get the normalized array.
+        *
+    """
+
     def array_normalization(self, input_array):
         array_norm = np.linalg.norm(input_array)
         # print ("array norm:",array_norm)
@@ -279,6 +524,20 @@ class operator:
             result[i] = (1.0*input_array[i])/array_norm
 
         return result
+
+    """
+        *
+        * function inner_product(input_array1, input array2)
+        *
+        * Summary: 
+        *
+        *   Given the 2 arrays, computes its inner product.
+        *   
+        * Parameters     : input_array: List of real numbers
+        *
+        * Return Value  : output_array: List of real numbers
+        *
+    """
 
     def inner_product(self, input_array1, input_array2):
         # # input_array1 = self.array_normalization(input_array1)
@@ -309,6 +568,20 @@ class operator:
 
         return result1, result2
 
+    """
+        *
+        * function inner_product(input_array1, input array2)
+        *
+        * Summary: 
+        *
+        *   Given the 2 arrays, computes its inner product.
+        *   
+        * Parameters     : input_array: List of real numbers
+        *
+        * Return Value  : output_array: List of real numbers
+        *
+    """
+
     def jaccard_similarity(self, input_array1, input_array2):
         
         output_array1 = self.mapping.dimension_reduction(input_array1)
@@ -318,6 +591,20 @@ class operator:
         result2 = jaccard_similarity(output_array1, output_array2)
 
         return result1, result2
+
+    """
+        *
+        * function inner_product(input_array1, input array2)
+        *
+        * Summary: 
+        *
+        *   Given the 2 arrays, computes its inner product.
+        *   
+        * Parameters     : input_array: List of real numbers
+        *
+        * Return Value  : output_array: List of real numbers
+        *
+    """
 
     def cosine_similarity(self, input_array1, input_array2):
         
@@ -383,9 +670,45 @@ class operator:
 
     #     return result1, result2
 
+    """
+        *
+        * function get_feature_count()
+        *
+        * Summary: 
+        *
+        *   Calculates number of features mapped in each bin of output vector.
+        *   
+        * Parameters     : None
+        *
+        * Return Value  : feature_counter: List of integers
+        *
+        * Description:
+        *
+        *   Each number in the returned list indicates the number of features mapped at
+        *   that position.
+        *
+    """
     def get_feature_counter(self):
         return self.mapping.get_feature_counter()
 
+    """
+        *
+        * function get_feature_counter()
+        *
+        * Summary: 
+        *
+        *   Collects list of features mapped in each bin of output vector.
+        *   
+        * Parameters     : None
+        *
+        * Return Value  : feature_counter: List of list of integers
+        *
+        * Description:
+        *
+        *   Each list in the returned list indicates the positions of input vector
+        *   that are mapped in output vector.
+        *
+    """
     def get_feature_count(self):
         return self.mapping.get_feature_count()
 

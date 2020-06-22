@@ -107,7 +107,7 @@ class mapper:
         * Summary: 
         *
         *   Deletes a mapping for deleted feature in map array at given
-        *   position. The deletion scheme is 'No Compensation'
+        *   position. The deletion scheme is '1 step Compensation'
         *   
         * Parameters     : position:Integer
         *
@@ -250,7 +250,7 @@ class mapper:
         * Summary: 
         *
         *   Deletes a mapping for deleted feature in map array at given
-        *   positions. The deletion scheme is 'No Compensation'
+        *   positions. The deletion scheme is '1 step Compensation'
         *   
         * Parameters     : batch_positions:List of integers
         *
